@@ -86,6 +86,7 @@ local function handleprogress(data)
 
     if progressData == false then
         SendNUIMessage({ type = 'cancelProgress' })
+        return false
     end
 
     return true

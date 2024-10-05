@@ -47,7 +47,7 @@
                     <div class="text-base font-medium text-white">{{ progressPercentage.toFixed(0) }}%</div>
                 </div>
 
-                <div class="w-full bg-gray-200 rounded-full h-4 flex gap-1 bg-transparent">
+                <div class="w-full rounded-full h-4 flex gap-1 bg-transparent">
                     <div v-for="n in 30" :key="n" class="h-full flex-1 rounded relative">
                         <div :class="{ 
                             'bg-sky-600 boxShadow': Math.ceil((progressPercentage / 100) * 30) >= n, 
