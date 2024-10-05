@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .boxShadow {
+            box-shadow: 0 0px 6px 2px rgba(2, 132, 199, 0.5);
+        }
+
+        .darkBoxShadow {
+            box-shadow: 0 0px 6px 2px rgba(36, 36, 36, 0.5);
+        }
+
+        .slide-up-enter-active,
+        .slide-up-leave-active {
+            transition: all 0.5s ease-out;
+        }
+
+        .slide-up-enter-from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+
+        .slide-up-enter-to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .slide-up-leave-to {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen select-none overflow-hidden">
+    <div id="app" class="h-full w-full relative flex justify-center items-end">
+        <transition name="slide-up" @after-enter="startProgress">
+            <div v-if="show" class="w-[15%] h-[8%] flex flex-col justify-center items-end">
+                <div class="flex w-full justify-between items-center">
+                    <div class="text-base font-normal text-white">{{ label }}</div>
+                    <div class="text-base font-medium text-white">{{ progressPercentage.toFixed(0) }}%</div>
+                </div>
+
+                <div class="w-full bg-gray-200 rounded-full h-4 flex gap-1 bg-transparent">
+                    <div v-for="n in 30" :key="n" class="h-full flex-1 rounded relative">
+                        <div :class="{ 
+                            'bg-sky-600 boxShadow': Math.ceil((progressPercentage / 100) * 30) >= n, 
+                            'bg-[#242424] darkBoxShadow': Math.ceil((progressPercentage / 100) * 30) < n 
+                        }" class="absolute inset-0 rounded opacity-100 transition-all duration-1000 ease-out"></div>
+                    </div>
+                </div>
+
+        </transition>
+    </div>
+
+
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.47/vue.global.prod.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
