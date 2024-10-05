@@ -15,7 +15,10 @@ local function handleprogress(data)
 
     if data.anim then
         if data.anim.dict then
-            lib.requestAnimDict(data.anim.dict)
+            RequestModel(data.anim.dict)
+            while not HasModelLoaded(data.anim.dict) do
+                Wait(0)
+            end
 
             TaskPlayAnim(PlayerPedId(), data.anim.dict, data.anim.clip, data.anim.blendIn or 3.0,
                 data.anim.blendOut or 1.0,
@@ -131,7 +134,10 @@ RegisterNUICallback('progressEnded', function(_, cb)
 end)
 
 local function createProp(ped, prop)
-    lib.requestModel(prop.model)
+    RequestModel(prop.model)
+    while not HasModelLoaded(prop.model) do
+      Wait(0)
+    end
     local coords = GetEntityCoords(ped)
     local object = CreateObject(prop.model, coords.x, coords.y, coords.z, false, false, false)
 
