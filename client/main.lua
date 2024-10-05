@@ -193,8 +193,9 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
     deleteProgressProps(serverId)
 end)
 
-RegisterCommand('cancelprogress', function()
-    if progressData.canCancel then progressData = false end
+RegisterCommand('cancelprogressbar', function()
+    if progressData?.canCancel then progressData = false end
 end)
-RegisterKeyMapping('cancelprogress', 'Cancel current progress bar', 'keyboard', 'x')
+
+RegisterKeyMapping('cancelprogressbar', 'Cancel current progress bar', 'keyboard', 'x')
 
