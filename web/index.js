@@ -2,7 +2,8 @@ const App = Vue.createApp({
     data() {
         return {
             show:false,
-            label: '',
+            label: 'Example Progress Text',
+            icon: '',
             duration: 0,   
             progressPercentage: 0, 
             interval: null, 
@@ -11,8 +12,9 @@ const App = Vue.createApp({
     methods: {
         onMessage(event) {
             if (event.data.type === "startProgress") {
-                this.duration = event.data.table.duration
-                this.label = event.data.table.label
+                this.label = event.data.table.label || 'No text defined'
+                this.icon = event.data.table.icon || ''
+                this.duration = event.data.table.duration || 5000
 
                 this.progressPercentage = 0; 
                 this.show = true

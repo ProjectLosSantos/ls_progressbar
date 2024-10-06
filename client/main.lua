@@ -105,6 +105,7 @@ local function startProgress(data)
             type = "startProgress",
             table = {
                 label = data.label,
+                icon = data.icon,
                 duration = data.duration,
             }
         })
