@@ -16,7 +16,10 @@ local function handleprogress(data)
     playerState:set('isBusy', true, true)
     if data.anim then
         if data.anim.dict then
-            lib.requestAnimDict(data.anim.dict)
+            RequestModel(data.anim.dict)
+            while not HasModelLoaded(data.anim.dict) do
+                Wait(0)
+            end
 
             TaskPlayAnim(PlayerPedId(), data.anim.dict, data.anim.clip, data.anim.blendIn or 3.0,
                 data.anim.blendOut or 1.0,
