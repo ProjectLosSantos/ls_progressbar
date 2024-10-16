@@ -192,14 +192,7 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
     deleteProgressProps(serverId)
 end)
 
-exports.ls_core:addKeyBind({
-    name = 'progressCancel',
-    description = 'Folyamat Megszakítása',
-    key = 'x',
-    category = 'Bár',
-    onPressed = function()
-        if progressData?.canCancel then
-            progressData = false
-        end
-    end,
-})
+RegisterCommand('cancelprogressbar', function()
+    if progressData?.canCancel then progressData = false end
+end)
+RegisterKeyMapping('cancelprogressbar', 'Cancel current progress bar', 'keyboard', 'x')
