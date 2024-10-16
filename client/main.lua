@@ -13,12 +13,10 @@ end
 local function handleprogress(data)
     progressData = data
 
+    playerState:set('isBusy', true, true)
     if data.anim then
         if data.anim.dict then
-            RequestModel(data.anim.dict)
-            while not HasModelLoaded(data.anim.dict) do
-                Wait(0)
-            end
+            lib.requestAnimDict(data.anim.dict)
 
             TaskPlayAnim(PlayerPedId(), data.anim.dict, data.anim.clip, data.anim.blendIn or 3.0,
                 data.anim.blendOut or 1.0,
@@ -35,6 +33,8 @@ local function handleprogress(data)
         playerState:set('progressProp', data.prop, true)
     end
 
+    local disable = data.disable
+
     while progressData do
         if disable then
             if disable.mouse then
@@ -45,8 +45,8 @@ local function handleprogress(data)
 
             if disable.move then
                 DisableControlAction(0, 21, true)
-                DisableControlAction(0, 1, true)
-                DisableControlAction(0, 2, true)
+                DisableControlAction(0, 30, true)
+                DisableControlAction(0, 31, true)
                 DisableControlAction(0, 36, true)
             end
 
@@ -89,6 +89,7 @@ local function handleprogress(data)
 
     if progressData == false then
         SendNUIMessage({ type = 'cancelProgress' })
+        playerState:set('isBusy', false, true)
         return false
     end
 
@@ -135,10 +136,7 @@ RegisterNUICallback('progressEnded', function(_, cb)
 end)
 
 local function createProp(ped, prop)
-    RequestModel(prop.model)
-    while not HasModelLoaded(prop.model) do
-      Wait(0)
-    end
+    lib.requestModel(prop.model)
     local coords = GetEntityCoords(ped)
     local object = CreateObject(prop.model, coords.x, coords.y, coords.z, false, false, false)
 
@@ -194,9 +192,14 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
     deleteProgressProps(serverId)
 end)
 
-RegisterCommand('cancelprogressbar', function()
-    if progressData?.canCancel then progressData = false end
-end)
-
-RegisterKeyMapping('cancelprogressbar', 'Cancel current progress bar', 'keyboard', 'x')
-
+exports.ls_core:addKeyBind({
+    name = 'progressCancel',
+    description = 'Folyamat Megszakítása',
+    key = 'x',
+    category = 'Bár',
+    onPressed = function()
+        if progressData?.canCancel then
+            progressData = false
+        end
+    end,
+})
