@@ -2,6 +2,8 @@ local playerState = LocalPlayer.state
 local progressData
 local currentProps = {}
 
+local inventoryState = GetResourceState('ox_inventory')
+
 local function interrupt(data)
     if not data.useWhileDead and IsEntityDead(PlayerPedId()) or playerState.isDead then return true end
     if not data.allowRagdoll and IsPedRagdoll(PlayerPedId()) then return true end
@@ -13,7 +15,9 @@ end
 local function handleprogress(data)
     progressData = data
 
-    playerState:set('isBusy', true, true)
+    if inventoryState ~= 'started' then
+        playerState:set('isBusy', true, true)
+    end
     if data.anim then
         if data.anim.dict then
             RequestModel(data.anim.dict)
@@ -92,7 +96,9 @@ local function handleprogress(data)
 
     if progressData == false then
         SendNUIMessage({ type = 'cancelProgress' })
-        playerState:set('isBusy', false, true)
+        if inventoryState ~= 'started' then
+            playerState:set('isBusy', false, true)
+        end
         return false
     end
 
