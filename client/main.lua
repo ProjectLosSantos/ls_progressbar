@@ -179,9 +179,5 @@ end)
 RegisterCommand('cancelprogressbar', function()
     if progressData?.canCancel then progressData = false end
 end)
-RegisterKeyMapping('cancelprogressbar', 'Cancel current progress bar', 'keyboard', 'z')
 
-RegisterCommand('cancelprogressbar', function()
-    if progressData?.canCancel then progressData = false end
-end)
 RegisterKeyMapping('cancelprogressbar', 'Cancel current progress bar', 'keyboard', 'x')
