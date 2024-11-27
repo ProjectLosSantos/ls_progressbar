@@ -2,8 +2,6 @@ local playerState = LocalPlayer.state
 local progressData
 local currentProps = {}
 
-local inventoryState = GetResourceState('ox_inventory')
-
 local function interrupt(data)
     if not data.useWhileDead and IsEntityDead(PlayerPedId()) or playerState.isDead then return true end
     if not data.allowRagdoll and IsPedRagdoll(PlayerPedId()) then return true end
@@ -14,17 +12,9 @@ end
 
 local function handleprogress(data)
     progressData = data
-
-    if inventoryState ~= 'started' then
-        playerState:set('isBusy', true, true)
-    end
     if data.anim then
         if data.anim.dict then
-            RequestModel(data.anim.dict)
-            while not HasModelLoaded(data.anim.dict) do
-                Wait(0)
-            end
-
+            lib.requestAnimDict(data.anim.dict)
             TaskPlayAnim(PlayerPedId(), data.anim.dict, data.anim.clip, data.anim.blendIn or 3.0,
                 data.anim.blendOut or 1.0,
                 data.anim.duration or -1,
@@ -35,13 +25,10 @@ local function handleprogress(data)
                 data.anim.playEnter ~= nil and data.anim.playEnter or true)
         end
     end
-
     if data.prop then
         playerState:set('progressProp', data.prop, true)
     end
-
     local disable = data.disable
-
     while progressData do
         if disable then
             if disable.mouse then
@@ -49,18 +36,15 @@ local function handleprogress(data)
                 DisableControlAction(0, 2, true)
                 DisableControlAction(0, 106, true)
             end
-
             if disable.move then
                 DisableControlAction(0, 21, true)
                 DisableControlAction(0, 30, true)
                 DisableControlAction(0, 31, true)
                 DisableControlAction(0, 36, true)
             end
-
             if disable.sprint and not disable.move then
                 DisableControlAction(0, 21, true)
             end
-
             if disable.car then
                 DisableControlAction(0, 63, true)
                 DisableControlAction(0, 64, true)
@@ -68,23 +52,19 @@ local function handleprogress(data)
                 DisableControlAction(0, 72, true)
                 DisableControlAction(0, 75, true)
             end
-
             if disable.combat then
                 DisableControlAction(0, 25, true)
                 DisablePlayerFiring(PlayerId(), true)
             end
         end
-
         if interrupt(data) then
             progressData = false
         end
         Wait(0)
     end
-
     if data.prop then
         playerState:set('progressProp', nil, true)
     end
-
     if data.anim then
         if data.anim.dict then
             StopAnimTask(PlayerPedId(), data.anim.dict, data.anim.clip, 1.0)
@@ -93,23 +73,18 @@ local function handleprogress(data)
             ClearPedTasks(PlayerPedId())
         end
     end
-
     if progressData == false then
         SendNUIMessage({ type = 'cancelProgress' })
-        if inventoryState ~= 'started' then
-            playerState:set('isBusy', false, true)
-        end
         return false
     end
-
     return true
 end
 
 local function startProgress(data)
+    playerState:set('invBusy', true, true)
     while progressData ~= nil do
         Wait(0)
     end
-
     if not interrupt(data) then
         SendNUIMessage({
             type = "startProgress",
@@ -119,7 +94,6 @@ local function startProgress(data)
                 duration = data.duration,
             }
         })
-
         return handleprogress(data)
     end
 end
@@ -129,8 +103,8 @@ local function cancelProgress()
     if not progressData then
         return
     end
-
     progressData = false
+    playerState:set('invBusy', false, true)
 end
 exports('cancel', cancelProgress)
 
@@ -142,6 +116,7 @@ exports('isProgressActive', isProgressActive)
 RegisterNUICallback('progressEnded', function(_, cb)
     cb('ok')
     progressData = nil
+    playerState:set('invBusy', false, true)
 end)
 
 local function createProp(ped, prop)
@@ -200,6 +175,11 @@ end)
 RegisterNetEvent('onPlayerDropped', function(serverId)
     deleteProgressProps(serverId)
 end)
+
+RegisterCommand('cancelprogressbar', function()
+    if progressData?.canCancel then progressData = false end
+end)
+RegisterKeyMapping('cancelprogressbar', 'Cancel current progress bar', 'keyboard', 'z')
 
 RegisterCommand('cancelprogressbar', function()
     if progressData?.canCancel then progressData = false end
